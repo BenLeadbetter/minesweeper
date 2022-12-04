@@ -1,0 +1,17 @@
+[package]
+name = "minesweeper-rs"
+authors = [
+    "Ben Leadbetter ben.leadbetter@hotmail.com",
+]
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["staticlib"]
+[dependencies]
+cxx = "1.0.83"
+cxx-qt = "0.4.1"
+cxx-qt-lib = "0.4.1"
+
+[build-dependencies]
+cxx-qt-build = "0.4.1"
