@@ -53,6 +53,7 @@ target_link_libraries(${CRATE} INTERFACE
     Qt6::Core 
     Qt6::Gui 
     Qt6::Qml 
+    Qt6::QuickControls2 
 )
 add_executable(${APP_NAME} cpp/main.cpp qml/qml.qrc)
 target_link_libraries(${APP_NAME} PRIVATE ${CRATE})
