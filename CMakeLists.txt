@@ -30,39 +30,12 @@ conan_cmake_install(
     SETTINGS ${CONAN_SETTINGS}
 )
 
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-set(QT_STATIC ON)
 find_package(Qt6 COMPONENTS Core Gui Qml Quick QuickControls2 REQUIRED)
-if(QT_STATIC)
-    find_package(Qt6 COMPONENTS QmlImportScanner REQUIRED)
-endif()
-get_target_property(QMAKE Qt6::qmake IMPORTED_LOCATION)
 
-set(CRATE minesweeper-rs)
-corrosion_import_crate(MANIFEST_PATH rust/Cargo.toml CRATES ${CRATE})
+add_subdirectory(rust)
 
-set(CXXQT_EXPORT_DIR "${CMAKE_CURRENT_BINARY_DIR}/cxxqt")
-corrosion_set_env_vars(${CRATE}
-    "CXXQT_EXPORT_DIR=${CXXQT_EXPORT_DIR}"
-    "QMAKE=${QMAKE}"
-)
-
-target_include_directories(${CRATE} INTERFACE "${CXXQT_EXPORT_DIR}/${CRATE}")
-target_link_libraries(${CRATE} INTERFACE 
-    Qt6::Core 
-    Qt6::Gui 
-    Qt6::Qml 
-    Qt6::Quick
-    Qt6::QuickTemplates2 
-    Qt6::QuickControls2 
-    Qt6::QCocoaIntegrationPlugin
-)
-add_executable(${APP_NAME} cpp/main.cpp qml/qml.qrc)
-target_link_libraries(${APP_NAME} PRIVATE ${CRATE})
+add_executable(${APP_NAME} main.cpp qml/qml.qrc)
+target_link_libraries(${APP_NAME} PRIVATE Qt6::Quick minesweeper-rs)
 
 set_target_properties(${APP_NAME} PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER ${APP_NAME}.com
