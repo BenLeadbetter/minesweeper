@@ -16,5 +16,5 @@ int main(int argc, char** argv) {
         Qt::QueuedConnection
     );
     engine.load(rootComponentUrl);
-    return app.exec();
+    return QCoreApplication::exec();
 }

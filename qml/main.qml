@@ -5,5 +5,6 @@ ApplicationWindow {
     width: 640
     height: 480
     color: "hotpink"
+    visible: true
 }
 

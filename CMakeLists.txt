@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.25)
 
-project(minesweeper)
+project(minesweeper VERSION 0.1)
 set(APP_NAME ${PROJECT_NAME})
 
 set(CMAKE_AUTOMOC ON)
@@ -17,8 +17,10 @@ setup_corrosion()
 conan_cmake_configure(
     REQUIRES qt/6.3.1 
     GENERATORS cmake_find_package
-    OPTIONS qt:qtshadertools=True
-    OPTIONS qt:qtdeclarative=True
+    OPTIONS 
+        qt:qtdeclarative=True
+        qt:qtshadertools=True
+        qt:shared=True
 )
 conan_cmake_autodetect(CONAN_SETTINGS)
 conan_cmake_install(
@@ -33,7 +35,8 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 COMPONENTS Core Gui Qml QuickControls2 REQUIRED)
+set(QT_STATIC ON)
+find_package(Qt6 COMPONENTS Core Gui Qml Quick QuickControls2 REQUIRED)
 if(QT_STATIC)
     find_package(Qt6 COMPONENTS QmlImportScanner REQUIRED)
 endif()
@@ -53,11 +56,17 @@ target_link_libraries(${CRATE} INTERFACE
     Qt6::Core 
     Qt6::Gui 
     Qt6::Qml 
+    Qt6::Quick
+    Qt6::QuickTemplates2 
     Qt6::QuickControls2 
+    Qt6::QCocoaIntegrationPlugin
 )
 add_executable(${APP_NAME} cpp/main.cpp qml/qml.qrc)
 target_link_libraries(${APP_NAME} PRIVATE ${CRATE})
 
-if(QT_STATIC)
-    qt_import_qml_plugins(${APP_NAME})
-endif()
+set_target_properties(${APP_NAME} PROPERTIES
+    MACOSX_BUNDLE_GUI_IDENTIFIER ${APP_NAME}.com
+    MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
+    MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
+    MACOSX_BUNDLE TRUE
+)
