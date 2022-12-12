@@ -22,7 +22,7 @@ ApplicationWindow {
             implicitHeight: 100
             color: "lightblue"
             Text {
-                text: display
+                text: type
                 anchors.fill: parent
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter

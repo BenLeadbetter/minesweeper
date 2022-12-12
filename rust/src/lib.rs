@@ -1,1 +1,2 @@
 mod minefield;
+mod data;
