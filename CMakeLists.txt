@@ -15,7 +15,7 @@ setup_conan()
 setup_corrosion()
 
 conan_cmake_configure(
-    REQUIRES qt/6.3.1 
+    REQUIRES qt/6.3.2
     GENERATORS cmake_find_package
     OPTIONS 
         qt:qtdeclarative=True
@@ -32,10 +32,14 @@ conan_cmake_install(
 
 find_package(Qt6 COMPONENTS Core Gui Qml Quick QuickControls2 REQUIRED)
 
+add_subdirectory(cpp)
 add_subdirectory(rust)
 
-add_executable(${APP_NAME} main.cpp qml/qml.qrc)
-target_link_libraries(${APP_NAME} PRIVATE Qt6::Quick minesweeper-rs)
+add_executable(${APP_NAME} 
+    main.cpp 
+    qml/qml.qrc # todo: move to lib
+)
+target_link_libraries(${APP_NAME} PRIVATE minesweeper-rs)
 
 set_target_properties(${APP_NAME} PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER ${APP_NAME}.com
