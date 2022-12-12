@@ -4,7 +4,6 @@ project(minesweeper VERSION 0.1)
 set(APP_NAME ${PROJECT_NAME})
 
 set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -34,12 +33,15 @@ find_package(Qt6 COMPONENTS Core Gui Qml Quick QuickControls2 REQUIRED)
 
 add_subdirectory(cpp)
 add_subdirectory(rust)
+add_subdirectory(qml)
 
-add_executable(${APP_NAME} 
-    main.cpp 
-    qml/qml.qrc # todo: move to lib
+add_executable(${APP_NAME} main.cpp)
+target_link_libraries(
+    ${APP_NAME} 
+        PRIVATE 
+            minesweeper-rs 
+            minesweeper-qml-resources
 )
-target_link_libraries(${APP_NAME} PRIVATE minesweeper-rs)
 
 set_target_properties(${APP_NAME} PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER ${APP_NAME}.com

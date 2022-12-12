@@ -4,9 +4,10 @@ import QtQuick.Controls
 import Minesweeper
 
 ApplicationWindow {
-    title: qsTr("Minesweeper")
     width: 640
     height: 480
+
+    title: qsTr("Minesweeper")
     color: "hotpink"
     visible: true
     

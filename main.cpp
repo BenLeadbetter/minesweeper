@@ -1,10 +1,13 @@
 #include <cxx-qt-gen/minefield.cxxqt.h>
 
 #include <QtCore/QUrl>
+#include <QtCore/QtGlobal>
 #include <QtGui/QGuiApplication>
 #include <QtQml/QQmlApplicationEngine>
 
 int main(int argc, char** argv) {
+    Q_INIT_RESOURCE(qml);
+
     QGuiApplication app(argc, argv);
     QQmlApplicationEngine engine;
 
