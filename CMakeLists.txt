@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 3.25)
 
 project(minesweeper VERSION 0.1)
-set(APP_NAME ${PROJECT_NAME})
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_CXX_STANDARD 17)
@@ -33,18 +32,4 @@ find_package(Qt6 COMPONENTS Core Gui Qml Quick QuickControls2 REQUIRED)
 
 add_subdirectory(rust)
 add_subdirectory(qml)
-
-add_executable(${APP_NAME} main.cpp)
-target_link_libraries(
-    ${APP_NAME} 
-        PRIVATE 
-            minesweeper-rs 
-            minesweeper-qml-resources
-)
-
-set_target_properties(${APP_NAME} PROPERTIES
-    MACOSX_BUNDLE_GUI_IDENTIFIER ${APP_NAME}.com
-    MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
-    MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
-    MACOSX_BUNDLE TRUE
-)
+add_subdirectory(app)
