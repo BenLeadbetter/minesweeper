@@ -16,7 +16,6 @@ public:
     
     virtual rust::Vec<rust::String> roleNamesAsVec() const = 0;
 
-    // Proxy Qt API to more CXX friendly API
     QHash<int, QByteArray> roleNames() const override
     {
         QHash<int, QByteArray> names;

@@ -1,9 +1,9 @@
 #pragma once
 
+#include <rust/cxx.h>
+
 #include <QtCore/QModelIndex>
 #include <QtCore/QTypeInfo>
-
-#include <rust/cxx.h>
 
 #include <type_traits>
 

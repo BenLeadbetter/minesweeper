@@ -31,7 +31,6 @@ conan_cmake_install(
 
 find_package(Qt6 COMPONENTS Core Gui Qml Quick QuickControls2 REQUIRED)
 
-add_subdirectory(cpp)
 add_subdirectory(rust)
 add_subdirectory(qml)
 
