@@ -1,5 +1,7 @@
 <RCC version="1.0">
     <qresource prefix="/">
+        <file>Tile.qml</file>
+        <file>TileBackground.qml</file>
         <file>main.qml</file>
     </qresource>
 </RCC>

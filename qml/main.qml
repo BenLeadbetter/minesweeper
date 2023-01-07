@@ -4,8 +4,12 @@ import QtQuick.Controls
 import Minesweeper
 
 ApplicationWindow {
-    width: 640
-    height: 480
+    width: minefield.contentWidth
+    height: minefield.contentHeight
+    maximumWidth: minefield.contentWidth
+    maximumHeight: minefield.contentHeight
+    minimumWidth: minefield.contentWidth
+    minimumHeight: minefield.contentHeight
 
     title: qsTr("Minesweeper")
     color: "hotpink"
@@ -14,19 +18,11 @@ ApplicationWindow {
     TableView {
         id: minefield
         anchors.fill: parent
-        columnSpacing: 10
-        rowSpacing: 10
+        columnSpacing: 0
+        rowSpacing: 0
         model: Minefield {}        
-        delegate: Rectangle {
-            implicitWidth: 100
-            implicitHeight: 100
-            color: "lightblue"
-            Text {
-                text: type
-                anchors.fill: parent
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
-            }
+        delegate: Tile {
+            text: type
         }
     }
 }
