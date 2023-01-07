@@ -1,86 +1,128 @@
-use cxx::{type_id, ExternType};
-use std::mem::MaybeUninit;
-#[repr(C)]
-pub struct QModelIndex {
-    _space: MaybeUninit<[usize; 3]>,
+use rand::distributions::Distribution;
+use itertools::Itertools;
+
+pub struct Minefield(Vec<Vec<Tile>>);
+
+#[derive(Clone)]
+pub struct Tile {
+    pub ty: Type,    
+    pub status: Status,
 }
 
-unsafe impl ExternType for QModelIndex {
-    type Id = type_id!("QModelIndex");
-    type Kind = cxx::kind::Trivial;
-}
-
-#[cxx_qt::bridge(cxx_file_stem = "minefield")]
-mod minefield_bridge {
-    use crate::data::{
-        Data as MinefieldData,
-        Status as TileStatus,
-        Type as TileType,
-    };
-
-    unsafe extern "C++" {
-        include!("QAbstractTableModelCxx.h");
-        include!("QModelIndexCxx.h");
-        include!("cxx-qt-lib/qvariant.h");
-        
-        type QVariant = cxx_qt_lib::QVariant;
-        type QModelIndex = super::QModelIndex;
-        
-        fn row(self: &QModelIndex) -> i32;
-        fn column(self: &QModelIndex) -> i32;
-
-        #[cxx_name = "beginResetModel"]
-        fn _begin_reset_model(self: Pin<&mut MinefieldQt>);
-        #[cxx_name = "endResetModel"]
-        fn _end_reset_model(self: Pin<&mut MinefieldQt>);
-    }
-    
-    #[cxx_qt::qobject(base = "QAbstractTableModelCxx")]
-    pub struct Minefield {
-        minefield_data: MinefieldData,
-    }
-    
-    impl std::default::Default for Minefield {
-        fn default() -> Self {
-            Minefield { minefield_data: MinefieldData::new(9, 12, 20) }
+impl std::default::Default for Tile {
+    fn default() -> Self {
+        Tile {
+            ty: Type::Safe(0),
+            status: Status::Unknown,
         }
     }
-    
-    impl qobject::Minefield {
+}
 
-        #[qinvokable(cxx_override)]
-        fn data(&self, index: &QModelIndex, role: i32) -> QVariant {
-            match self.rust().minefield_data.index(index.row(), index.column()) {
-                Some(tile) => match role {
-                    0 => match tile.status {
-                        TileStatus::Unknown => QVariant::from(0_i32),
-                        TileStatus::Flagged => QVariant::from(1_i32),
-                        TileStatus::Revealed => QVariant::from(2_i32),
-                        TileStatus::Suspicious => QVariant::from(3_i32),
-                    },
-                    1 => match tile.ty {
-                        TileType::Mine => QVariant::from(-1_i32),
-                        TileType::Safe(v) => QVariant::from(v as i32),
-                    },
-                    _ => QVariant::default(),
-                },
-                None => QVariant::default(),
+pub struct Data(pub Vec<Vec<bool>>);
+
+impl Data {
+    pub fn new_random(width: usize, height: usize, mines: usize) -> Data {
+        let mut ret = Data(vec![vec![false; height]; width]);
+        let mut mines_set = 0;
+        let distribution = rand::distributions::Uniform::from(0..width*height);
+        let mut rng = rand::thread_rng();
+        loop {
+            if mines_set == mines {
+                break;
+            }
+            
+            let index = distribution.sample(&mut rng);
+            let mut mine =
+                &mut ret.0[index % width][index / width];
+
+            if !*mine {
+                *mine = true;
+                mines_set += 1;
+            }
+        }
+        return ret;
+    }
+}
+
+#[derive(Clone)]
+pub enum Type {
+    Mine,
+    Safe(u8),
+}
+
+#[derive(Clone, Copy)]
+pub enum Status {
+    Unknown,
+    Flagged,
+    Revealed,
+    Suspicious,
+}
+
+impl Minefield {
+    pub fn new(data: Data) -> Self {
+        let width = data.0.len();
+        let height = data.0[0].len();
+
+        assert!(width >= 1);
+        assert!(height >= 1);
+
+        let mut ret = Minefield(vec![vec![Default::default(); height]; width]);
+        
+        for (i, j) in (0..width as i32).cartesian_product(0..height as i32) {
+            if data.0[i as usize][j as usize] {
+                *ret.index_mut(i, j).unwrap() = Tile {
+                    ty: Type::Mine,
+                    status: Status::Unknown,
+                };
+                let mut increment_neighbour = |i: i32, j: i32| {
+                    if let Some(&Tile{ ty: Type::Safe(v), status }) = ret.index(i, j) {
+                        ret.0[i as usize][j as usize] = Tile {
+                            ty: Type::Safe(v + 1),
+                            status,
+                        };
+                    }
+                };
+                increment_neighbour(i, j - 1);
+                increment_neighbour(i + 1, j - 1);
+                increment_neighbour(i + 1, j);
+                increment_neighbour(i + 1, j + 1);
+                increment_neighbour(i, j + 1);
+                increment_neighbour(i - 1, j + 1);
+                increment_neighbour(i - 1, j);
+                increment_neighbour(i - 1, j - 1);
             }
         }
 
-        #[qinvokable(cxx_override)]
-        pub fn row_count(&self, _parent: &QModelIndex) -> i32 {
-            self.rust().minefield_data.width()
+        ret
+    }
+    
+    pub fn width(&self) -> i32 {
+        return self.0.len() as i32
+    }
+
+    pub fn height(&self) -> i32 {
+        return self.0[0].len() as i32
+    }
+    
+    pub fn index(&self, row: i32, col: i32) -> Option<&Tile> {
+        if 
+            row >= self.width() || 
+            col >= self.height() ||
+            row < 0 || col < 0 {
+            None
+        } else {
+            Some(&self.0[row as usize][col as usize])
         }
-        
-        #[qinvokable(cxx_override)]
-        pub fn column_count(&self, _parent: &QModelIndex) -> i32 {
-            self.rust().minefield_data.height()
-        }
-        
-        #[qinvokable(cxx_override)]
-        pub fn role_names_as_vec(&self) -> Vec<String> {
-            vec!["status".to_owned(), "type".to_owned()]
+    }
+
+    pub fn index_mut(&mut self, row: i32, col: i32) -> Option<&mut Tile> {
+        if 
+            row >= self.width() || 
+            col >= self.height() ||
+            row < 0 || col < 0 {
+            None
+        } else {
+            Some(&mut self.0[row as usize][col as usize])
         }
     }
 }

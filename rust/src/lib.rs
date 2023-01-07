@@ -1,2 +1,2 @@
 mod minefield;
-mod data;
+mod qt_minefield;

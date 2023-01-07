@@ -9,6 +9,6 @@ fn main() {
                     .map(|(_, val)| val)
             );
         })
-        .file("src/minefield.rs")
+        .file("src/qt_minefield.rs")
         .build();
 }
