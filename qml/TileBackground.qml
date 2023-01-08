@@ -5,10 +5,16 @@ Item {
     id: tileBackground
 
     required property color color
-    required property bool revealed
+    required property int status
 
+    Rectangle {
+        anchors.fill: parent
+        visible: tileBackground.status === Tile.Revealed
+        color: tileBackground.color
+    }
     Shape {
         anchors.fill: parent
+        visible: tileBackground.status !== Tile.Revealed
         ShapePath {
             strokeWidth: -1
             fillColor: Qt.lighter(tileBackground.color, 1.5)
@@ -19,6 +25,7 @@ Item {
     }
     Shape {
         anchors.fill: parent
+        visible: tileBackground.status !== Tile.Revealed
         ShapePath {
             strokeWidth: -1
             fillColor: Qt.darker(tileBackground.color, 1.5)
@@ -32,6 +39,7 @@ Item {
             fill: parent
             margins: tile.padding
         }
+        visible: tileBackground.status !== Tile.Revealed
         color: tileBackground.color
     }
 }

@@ -4,8 +4,20 @@ import QtQuick.Templates as T
 T.Control {
     id: tile
 
-    property string text
+    enum Status {
+        Unknown,
+        Flagged,
+        Revealed,
+        Suspicious
+    }
 
+    property int status
+    property int adjacentMines
+    property bool mine
+    
+    signal reveal
+    signal mark
+    
     implicitWidth: 30
     implicitHeight: 30
     padding: 3
@@ -13,7 +25,7 @@ T.Control {
 
     contentItem: Item {
         Text {
-            text: tile.text
+            text: tile.adjacentMines
             anchors.fill: parent
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
@@ -22,6 +34,25 @@ T.Control {
     background: TileBackground {
         id: bg
         color: d.defaultBackgroundBaseColor
+        status: tile.status
+
+        TapHandler {
+            acceptedButtons: Qt.LeftButton
+            onTapped: {
+                if (tile.status !== Tile.Revealed) {
+                    tile.reveal()
+                }
+            }
+        }
+
+        TapHandler {
+            acceptedButtons: Qt.RightButton
+            onTapped: {
+                if (tile.status !== Tile.Revealed) {
+                    tile.mark()
+                }
+            }
+        }
     }
     states: [
         State {
@@ -36,5 +67,4 @@ T.Control {
         id: d
         readonly property color defaultBackgroundBaseColor: "#969696"
     }
-    
 }

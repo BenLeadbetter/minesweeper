@@ -32,7 +32,7 @@ impl Data {
             }
             
             let index = distribution.sample(&mut rng);
-            let mut mine =
+            let mine =
                 &mut ret.0[index % width][index / width];
 
             if !*mine {
@@ -124,5 +124,13 @@ impl Minefield {
         } else {
             Some(&mut self.0[row as usize][col as usize])
         }
+    }
+    
+    pub fn reveal(&mut self, row: i32, col: i32) {
+        println!("reveal ({}, {})", row, col);
+    }
+
+    pub fn mark(&mut self, row: i32, col: i32) {
+        println!("mark ({}, {})", row, col);
     }
 }

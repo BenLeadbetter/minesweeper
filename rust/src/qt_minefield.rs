@@ -60,6 +60,10 @@ mod minefield_bridge {
                         TileStatus::Suspicious => QVariant::from(3_i32),
                     },
                     1 => match tile.ty {
+                        TileType::Mine => QVariant::from(true),
+                        TileType::Safe(_) => QVariant::from(false),
+                    },
+                    2 => match tile.ty {
                         TileType::Mine => QVariant::from(-1_i32),
                         TileType::Safe(v) => QVariant::from(v as i32),
                     },
@@ -81,7 +85,19 @@ mod minefield_bridge {
         
         #[qinvokable(cxx_override)]
         pub fn role_names_as_vec(&self) -> Vec<String> {
-            vec!["status".to_owned(), "type".to_owned()]
+            vec!["status".to_owned(), "mine".to_owned(), "adjacentMines".to_owned()]
+        }
+        
+        #[qinvokable]
+        pub fn reveal(mut self: Pin<&mut Self>, index: i32) {
+            let width = self.internal().width();
+            self.as_mut().internal_mut().reveal(index / width, index % width);
+        }
+
+        #[qinvokable]
+        pub fn mark(mut self: Pin<&mut Self>, index: i32) {
+            let width = self.internal().width();
+            self.as_mut().internal_mut().mark(index / width, index % width);
         }
     }
 }

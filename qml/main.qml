@@ -20,9 +20,15 @@ ApplicationWindow {
         anchors.fill: parent
         columnSpacing: 0
         rowSpacing: 0
-        model: Minefield {}        
+        model: Minefield {
+            id: minefieldModel
+        }
         delegate: Tile {
-            text: type
+            adjacentMines: model.adjacentMines
+            mine: model.mine
+            status: model.status
+            onReveal: minefieldModel.reveal(index);
+            onMark: minefieldModel.mark(index);
         }
     }
 }
