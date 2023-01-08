@@ -99,5 +99,15 @@ mod minefield_bridge {
             let width = self.internal().width();
             self.as_mut().internal_mut().mark(index / width, index % width);
         }
+
+        #[qinvokable]
+        pub fn rows(&self) -> i32 {
+            self.internal().width()
+        }
+
+        #[qinvokable]
+        pub fn cols(&self) -> i32 {
+            self.internal().height()
+        }
     }
 }

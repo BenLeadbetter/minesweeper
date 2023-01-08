@@ -4,12 +4,12 @@ import QtQuick.Controls
 import Minesweeper
 
 ApplicationWindow {
-    width: minefield.contentWidth
-    height: minefield.contentHeight
-    maximumWidth: minefield.contentWidth
-    maximumHeight: minefield.contentHeight
-    minimumWidth: minefield.contentWidth
-    minimumHeight: minefield.contentHeight
+    width: 30 * minefieldModel.cols()
+    height: 30 * minefieldModel.rows()
+    minimumHeight: height
+    maximumHeight: height
+    minimumWidth: width
+    maximumWidth: width
 
     title: qsTr("Minesweeper")
     color: "hotpink"
